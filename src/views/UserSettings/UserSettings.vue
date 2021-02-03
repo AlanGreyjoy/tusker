@@ -1,7 +1,7 @@
 <template>
     <div>
         <v-bottom-sheet inset v-model="show" light style="background-color: white" width="800">
-            <v-card shaped class="fill-height pb-12">
+            <v-card light shaped class="fill-height pb-12">
                 <v-toolbar>
                     <v-toolbar-title>
                         <v-avatar color="primary" class="mr-3">
@@ -14,7 +14,7 @@
                     <v-spacer></v-spacer>
                     <v-btn fab small color="error"><v-icon>mdi-close</v-icon></v-btn>
                 </v-toolbar>
-                <v-tabs vertical light icons-and-text class="fill-height">
+                <v-tabs v-model="tabModel" vertical light icons-and-text class="fill-height">
                     <!--Settings-->
                     <v-tab>Settings<v-icon>mdi-account-settings</v-icon></v-tab>
                     <v-tab-item style="background-color: white">
@@ -22,6 +22,9 @@
                     </v-tab-item>
                     <!--Security & Login-->
                     <v-tab>Security & Login <v-icon>mdi-account-key</v-icon></v-tab>
+                    <v-tab-item style="background-color: white">
+                        <SecurityAndLogin></SecurityAndLogin>
+                    </v-tab-item>
                 </v-tabs>
             </v-card>
         </v-bottom-sheet>
@@ -30,14 +33,17 @@
 
 <script>
     import General from "./General";
+    import SecurityAndLogin from "./SecurityAndLogin";
+
     export default {
         name: "UserSettings",
-        components: {General},
+        components: {General, SecurityAndLogin},
         data() {
             return{
                 show: true,
                 resolve: null,
                 reject: null,
+                tabModel: 1
             }
         },
         watch: {

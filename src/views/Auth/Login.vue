@@ -66,7 +66,7 @@
         </v-main>
 
         <!--Beta Signup Dialog-->
-        <v-dialog v-model="betaSignupDialog" light width="500">
+        <v-dialog v-model="betaSignupDialog" light width="500" persistent>
             <v-card>
                 <v-card-title></v-card-title>
                 <v-card-text>
@@ -77,28 +77,33 @@
                     </v-row>
                     <v-row>
                         <v-col>
-                            <v-text-field
-                                    label="Email"
-                                    append-icon="mdi-email"
-                                    rounded
-                                    filled
-                                    v-model="betaEmail"
-                            ></v-text-field>
+                            <v-form ref="form">
+                                <!--Email-->
+                                <v-text-field :rules="rules" label="Email" append-icon="mdi-email" rounded filled v-model="betaEmail"></v-text-field>
+                                <!--First Name-->
+                                <v-text-field :rules="rules" label="First Name" rounded filled v-model="betaFirstName" append-icon="mdi-account"></v-text-field>
+                                <!--Last Name-->
+                                <v-text-field :rules="rules" label="Last Name" rounded filled v-model="betaLastName" append-icon="mdi-account"></v-text-field>
+                                <!--Password-->
+                                <v-text-field :rules="rules" label="Password" rounded filled v-model="betaPassword" append-icon="mdi-key"></v-text-field>
+                                <!--Enable sms 2fa-->
+                                <v-checkbox class="mt-0 pt-0" label="Auto enable SMS 2fa?" @change="showBetaPhonenumber = !showBetaPhonenumber"></v-checkbox>
+                                <!--SMS Phone number-->
+                                <v-text-field v-show="showBetaPhonenumber" label="Phone number" rounded filled v-model="betaPhonenumber" append-icon="mdi-phone"></v-text-field>
+                            </v-form>
                             <p>
                                 Enter your email above!
                             </p>
                             <p>
                                 If approved, you'll get an email containing instructions on how to join the beta program!
                             </p>
-                            <p>
-                                Beta testers will receive the badge <strong>Beta Strong</strong> that they can add to their display name!
-                            </p>
                         </v-col>
                     </v-row>
                 </v-card-text>
-                <v-card-actions>
-                    <v-btn rounded block large color="primary" @click="SubmitBetaSignup">Submit!</v-btn>
-                </v-card-actions>
+                <div class="px-6 pb-6">
+                    <v-btn class="mb-3" rounded block large color="primary" @click="SubmitBetaSignup">Submit!</v-btn>
+                    <v-btn rounded block large color="error" @click="betaSignupDialog = false">I love being spied on and my info sold!</v-btn>
+                </div>
             </v-card>
         </v-dialog>
     </div>
@@ -114,13 +119,26 @@
                 mfaCode: '',
                 show2fa: false,
                 betaSignupDialog: false,
-                betaEmail: ''
+                betaEmail: '',
+                betaFirstName: '',
+                betaLastName: '',
+                betaPassword: '',
+                betaPhonenumber: '',
+                showBetaPhonenumber: false,
+                rules: [v=>!!v||'This field is required!']
             }
         },
         watch: {
             betaSignupDialog() {
                 if (!this.betaSignupDialog) {
+                    this.$refs.form.reset()
                     this.betaEmail = ''
+                    this.betaEmail = ''
+                    this.betaFirstName = ''
+                    this.betaLastName = ''
+                    this.betaPassword = ''
+                    this.betaPhonenumber = ''
+                    this.showBetaPhonenumber = false
                 }
             }
         },
@@ -133,13 +151,20 @@
                 this.betaSignupDialog = true
             },
             SubmitBetaSignup() {
-                if (this.betaEmail === '') {
-                    this.$store.dispatch('ShowAlertAsync', {color: 'error', message: 'You forgot to include your email!'})
-                    return;
-                }
-                this.$axios.post('/api/v1/auth/beta-signup', {email: this.betaEmail}).then(res=>{
+
+                if(!this.$refs.form.validate())
+                    return
+
+                this.$axios.post('/api/v1/auth/beta-signup', {
+                    email: this.betaEmail,
+                    firstName: this.betaFirstName,
+                    lastName: this.betaPassword,
+                    password: this.betaPassword,
+                    sms: this.betaPhonenumber
+                }).then(res=>{
                     this.$store.dispatch('ShowAlertAsync', {color: 'success', message: res.data.message})
                     this.betaSignupDialog = false
+                    this.$router.push({name: 'welcome'})
                 }).catch(error=>{
                     this.$store.dispatch('ShowAlertAsync', {color: 'error', message: error.response.data.message})
                 });
@@ -158,6 +183,7 @@
                 this.$axios.post('/api/v1/auth/verify-mfa-code', {mfaCode: this.mfaCode, user: localStorage.getItem('user')}).then(res=>{
                     localStorage.setItem('user', JSON.stringify(res.data.user))
                     localStorage.setItem('jwt', res.data.token)
+                    this.$store.dispatch('ShowAlertAsync', {color: 'success', message: 'Login successful! Please wait....'})
                     this.$router.push({name: 'home', params:{displayName: this.$store.getters.GetUser.firstName + this.$store.getters.GetUser.lastName + this.$store.getters.GetUser.id}})
                 }).catch(error=>{
                     this.$store.dispatch('ShowAlertAsync', {color: 'error', message: error.response.data.message})

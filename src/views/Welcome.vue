@@ -8,7 +8,6 @@
                 style="position: sticky; top: 0px"
         >
             <v-spacer></v-spacer>
-            <v-btn text tile>Coming soon!</v-btn>
             <v-btn outlined color="primary" @click="Login">Login</v-btn>
         </v-app-bar>
         <v-navigation-drawer
@@ -43,8 +42,8 @@
                                             rounded
                                             disabled
                                     ></v-text-field>
-                                    <v-subheader>Coming Soon!</v-subheader>
                                     <v-btn block color="purple" rounded large>Register</v-btn>
+                                    <p class="text-center mt-3">Head to the login page for the beta sign up form!</p>
                                 </v-col>
                             </v-row>
                         </v-card-text>
@@ -58,9 +57,9 @@
             </template>
         </v-navigation-drawer>
         <v-main style="margin-top: -63px">
-            <v-container>
+            <v-container class="ma-0 pa-0" style="max-width: none !important;">
 
-                <v-row style="height: 100vh" align="center" justify="center" class="header-wallpaper">
+                <v-row style="height: 100vh !important; width: 100% !important; margin: 0 !important;" align="center" justify="center" class="header-wallpaper">
                     <v-col cols="8">
                         <h1 class="display-3 font-weight-light">Taking on the giants...</h1>
                         <h3 class="display-1 font-weight-thin mt-3">one whale at a time</h3>
@@ -73,12 +72,12 @@
                 <v-row class="my-12 py-6 px-6">
                     <v-col lg="6">
                         <v-img
-                                src="/images/Privacy.png"
+                                src="/images/privacy.png"
                                 contain
                                 height="350"
                         ></v-img>
                     </v-col>
-                    <v-col lg="6">
+                    <v-col lg="6" class="pr-12">
                         <h1 class="text-center display-2 font-weight-thin">First things first, lets talk about Privacy</h1>
                         <p class="mt-3 text-center subtitle-1">
                             We will never, ever, never ever never, sell your info
@@ -233,6 +232,7 @@
     .header-wallpaper{
         background-position: center;
         background-size: cover;
-        background-image: url("/images/elephant1.jpg");
+        width: 100%;
+        background-image: url("/images/elephant-whale.jpg");
     }
 </style>
